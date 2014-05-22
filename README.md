@@ -1,4 +1,4 @@
 summit
 ======
 
-wentworth polytechnic summit 2013
+wentworth polytechnic summit June 2013

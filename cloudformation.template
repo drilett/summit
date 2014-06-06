@@ -1,5 +1,5 @@
 ﻿{
-	"Description" : "Sample CloudFormation script to install tomcat7 and deploy a war file sent via a parameter.  Defaults only work for US East N. Virginia.",
+	"Description" : "Dave's Sample CloudFormation script to install tomcat7 and deploy a war file sent via a parameter.  Defaults only work for US East N. Virginia.",
 
 	"Parameters" : {
 		"warURL" : {

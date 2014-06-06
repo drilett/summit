@@ -1,0 +1,58 @@
+﻿{
+	"Description" : "Dave Sample CloudFormation script to install tomcat7 and deploy a war file sent via a parameter.  Defaults only work for US East N. Virginia.",
+
+	"Parameters" : {
+		"warURL" : {
+			"Default" : "https://s3.amazonaws.com/elasticbeanstalk-samples-us-east-1/elasticbeanstalk-sampleapp.war",
+			"Description" : "This is the war file which will be installed on the instance.",
+			"Type" : "String"
+		},
+		"AWSImageID" : {
+			"Default" : "ami-1624987f",
+			"Type" : "String"
+
+		},
+		"EC2InstanceType" : {
+			"Default" : "m1.small",
+			"Description" : "We default to m1.large for expedience.",
+			"Type" : "String"
+		}
+	},
+
+	"Resources" : {
+		"TC7Instance" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"ImageId" : { "Ref" : "AWSImageID" },
+				"SecurityGroups" : [ { "Ref" : "TC7SecurityGroup" } ],
+				"InstanceType" : { "Ref" : "EC2InstanceType" },
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
+            		"#!/bin/bash -ex","\n",
+            		"yum -y install tomcat7","\n",
+            		"cd  /var/lib/tomcat7/webapps","\n",
+            		"wget ", { "Ref" : "warURL" }," -O ROOT.war","\n",
+            		"chown root.tomcat ROOT.war","\n",
+            		"service tomcat7 start","\n" ]]}
+				}
+			}
+		},
+
+		"TC7SecurityGroup" : {
+	    	"Type" : "AWS::EC2::SecurityGroup",
+	      	"Properties" : {
+		        "GroupDescription" : "Enable HTTP access via port 8080.",
+		        "SecurityGroupIngress" : [ 
+		        	{ "IpProtocol" : "tcp","FromPort" : "8080","ToPort" : "8080","CidrIp" : "0.0.0.0/0" }
+	        	]
+	    	}
+    	}
+	},
+
+	"Outputs" : {
+		"URL" : {
+		      "Description" : "Public URL.",
+		      "Value" :  { "Fn::Join" : [ "", [ "http://", { "Fn::GetAtt" : [ "TC7Instance", "PublicIp" ]}, ":8080"]]}
+		}
+	}
+}
+
